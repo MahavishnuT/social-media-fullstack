@@ -36,6 +36,8 @@ function App() {
     );
   };
 
+  console.log("coucou")
+
   const ProtectedRoute = ({ children }) => {
     if (!currentUser) {
       return <Navigate to="/login" />;
