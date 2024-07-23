@@ -1,34 +1,23 @@
-import Post from "../post/Post"
-import "./posts.scss"
+import { useQuery } from 'react-query';
+import { makeRequest } from '../../axios';
+import Post from '../post/Post';
+import './posts.scss';
 
 const Posts = () => {
+  const { data, isLoading, isError } = useQuery(['posts'], async () => {
+    const res = await makeRequest.get('/posts');
+    return res.data;
+  });
 
-  const posts = [
-    {
-      id: 1,
-      name: "John Doe",
-      userId: 1,
-      profilePic: "https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
-      img: "https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      userId: 2,
-      profilePic: "https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
-      img: "https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-    }
-  ]
-
-  return(
+  return (
     <div className="posts">
-      {posts.map(post => (
-        <Post post={post} key={post.id}/>
-      ))}
+      {isLoading
+        ? 'Loading...'
+        : isError
+        ? 'Something went wrong!'
+        : data.map((post) => <Post post={post} key={post.id} />)}
     </div>
-  )
-}
+  );
+};
 
-export default Posts
+export default Posts;

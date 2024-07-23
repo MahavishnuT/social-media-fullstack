@@ -9,21 +9,31 @@ import LanguageIcon from '@mui/icons-material/Language';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Posts from '../../components/posts/Posts';
+import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { makeRequest } from '../../axios';
+import { useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 
 const Profile = () => {
+
+  const currentUser = useContext(AuthContext);
+  // get userId in the url
+  const userId = useLocation().pathname.split('/')[2];
+
+  const { isLoading, isError, data: userData } = useQuery(['user'], async () => {
+    const res = await makeRequest.get('/users/find/' + userId);
+    return res.data || [];
+  });
+  const data = userData || [];
+
+  console.log(userData);
+
   return (
     <div className="profile">
       <div className="images">
-        <img
-          src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt=""
-          className="cover"
-        />
-        <img
-          src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt=""
-          className="profilePic"
-        />
+        <img src={data.coverPic} alt="" className="cover" />
+        <img src={data.profilePic} alt="" className="profilePic" />
       </div>
       <div className="profileContainer">
         <div className="uInfo">
@@ -31,7 +41,7 @@ const Profile = () => {
             <a href="https://www.facebook.com">
               <FacebookTwoToneIcon fontSize="medium" />
             </a>
-            <a href="https://www.facebook.com">
+            <a href="https://www.instagram.com">
               <InstagramIcon fontSize="medium" />
             </a>
             <a href="https://www.facebook.com">
@@ -45,18 +55,18 @@ const Profile = () => {
             </a>
           </div>
           <div className="center">
-            <span>Jane Doe</span>
+            <span>{data.name}</span>
             <div className="info">
               <div className="item">
                 <PlaceIcon />
-                <span>USA</span>
+                <span>{data.city}</span>
               </div>
               <div className="item">
                 <LanguageIcon />
-                <span>tompujalte.com</span>
+                <span>{data.website}</span>
               </div>
             </div>
-            <button>Follow</button>
+            {currentUser.currentUser.id === userId && <button>Follow</button>}
           </div>
           <div className="right">
             <EmailOutlinedIcon />
